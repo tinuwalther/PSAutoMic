@@ -129,44 +129,41 @@ Start-PodeServer -Thread 2 {
         "[$($FileEvent.Type)]: $($FileEvent.Name)" | Out-Default
         # file path
         $FileEvent.FullPath | Out-Default
-        # get content from file
-        $JSON = Get-Content -Path $FileEvent.FullPath | ConvertFrom-Json
-        $Data = $JSON | Select-Object -Expandproperty Data -ErrorAction Stop
-        if($Data.Gettype().Name -ne 'PSCustomObject'){
-            $Data = $Data | ConvertFrom-Json
-        }
-        switch ($Data.Os){
-            'almalinux' {
-                "$($Data.Os) is implemented" | Out-Default
-                $Data | Out-Default
-            }
-            'ubuntu' {
-                "$($Data.Os) is implemented" | Out-Default
-                $Data | Out-Default
-            }
-            default {
-                "$($Data.Os) not implemented yet" | Out-Default
-            }
-        }
-        #Start-Process pwsh.exe $(Join-Path $PSScriptRoot -ChildPath "Build-Container.ps1")
+        $InstallArgs = @{}
+        $InstallArgs.FilePath     = "pwsh.exe"
+        $InstallArgs.ArgumentList = @()
+        $InstallArgs.ArgumentList += "-file $(Join-Path $PSScriptRoot -ChildPath "Build-Container.ps1") $($FileEvent.FullPath)"
+        (Start-Process @InstallArgs -PassThru).ExitCode
     }
 
     # set the api route
     Add-PodeRoute -Method Post -Path '/api/v1/docker' -Authentication 'Validate' -ContentType 'application/json' -ScriptBlock {
         # route logic
-        $data = [PSCustomObject]@{
-            TimeStamp = Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'
-            Uuid      = (New-Guid | Select-Object -ExpandProperty Guid)
-            Source    = $env:COMPUTERNAME
-            Agent     = $WebEvent.Request.UserAgent
-            Data      = $WebEvent.Data
+        $continue = $false
+        $body = [PSCustomObject]$WebEvent.Data #| ConvertFrom-Json
+        switch ($body.Os){
+            'almalinux' { $continue = $true  }
+            'ubuntu'    { $continue = $true  }
+            default     { $continue = $false }
         }
-        # Out to the Terminal or for other logic
-        $queue = $($($PSScriptRoot) -replace 'bin','queue')
-        $data | ConvertTo-Json | Out-File -FilePath $(Join-Path $queue -ChildPath "$($data.Uuid).json") -Encoding utf8
 
-        # Rest response
-        Write-PodeJsonResponse -Value (@{Uuid = $($data.Uuid)} | ConvertTo-Json)
+        if($continue){
+            $data = [PSCustomObject]@{
+                TimeStamp = Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'
+                Uuid      = (New-Guid | Select-Object -ExpandProperty Guid)
+                Source    = $env:COMPUTERNAME
+                Agent     = $WebEvent.Request.UserAgent
+                Data      = $WebEvent.Data
+            }
+            # Out to the Terminal or for other logic
+            $queue = $($($PSScriptRoot) -replace 'bin','queue')
+            $data | ConvertTo-Json | Out-File -FilePath $(Join-Path $queue -ChildPath "$($data.Uuid).json") -Encoding utf8
+    
+            # Rest response
+            Write-PodeJsonResponse -Value (@{Uuid = $($data.Uuid)} | ConvertTo-Json)
+        }else{
+            Write-PodeJsonResponse -Value (@{Uuid = "$($body.Os) not implemented yet"} | ConvertTo-Json)
+        }
     }
 
 }
