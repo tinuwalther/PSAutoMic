@@ -1,0 +1,55 @@
+FROM almalinux:latest
+LABEL os="almalinux"
+LABEL author="Martin Walther Foto & IT"
+LABEL content="almalinux with PowerCLI 13 and Python 3.7"
+LABEL release-date="2022-12-25"
+LABEL version="0.0.1-beta"
+ENV container docker
+
+RUN echo "*** Build Image ***"
+RUN dnf install wget -y
+
+RUN echo "> Install PowerShell 7"
+RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
+RUN rpm -Uvh https://packages.microsoft.com/config/centos/8/packages-microsoft-prod.rpm
+RUN dnf install powershell -y
+RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
+RUN pwsh -Command "& {Install-Module -Name PSNetTools, VMware.PowerCLI}"
+RUN pwsh -Command "& {Set-PowerCLIConfiguration -Scope AllUser -ParticipateInCEIP $true -Confirm:'$false'}"
+COPY profile.ps1 /opt/microsoft/powershell/7
+
+RUN echo "> Install Python 3.7"
+RUN dnf update -y
+RUN dnf makecache --refresh
+RUN dnf groupinstall "Development Tools" -y
+RUN dnf install bzip2-devel libffi-devel openssl-devel -y
+COPY get-pip.py /tmp/
+COPY configpy.sh /tmp/
+COPY configpcli.ps1 /tmp/
+RUN mkdir /data
+RUN /tmp/configpy.sh
+RUN pwsh -File /tmp/configpcli.ps1
+RUN echo "*** Build finished ***"
+
+# Run it local as root
+# cat /etc/almalinux-release
+# cd /opt
+# tar xzf Python-3.7.9.tgz
+# cd Python-3.7.9
+# ./configure --enable-optimizations
+# make altinstall
+# rm ../Python-3.7.9.tgz -f
+# python3.7 -V
+# echo "> Install prerequirements for VMware.ImageBuilder"
+# python3.7 /tmp/get-pip.py
+# pip3.7 install six psutil lxml pyopenssl
+
+# python3.7
+# import sys
+# sys.executable
+# exit()
+
+# pwsh
+# Set-PowerCLIConfiguration -Scope AllUser -ParticipateInCEIP $true -Confirm:$false
+# Set-PowerCLIConfiguration -Scope User -PythonPath '/usr/local/bin/python3.7' -Confirm:$false
+# Get-EsxSoftwareDepot

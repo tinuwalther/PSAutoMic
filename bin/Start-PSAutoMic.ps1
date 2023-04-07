@@ -1,6 +1,42 @@
 #Requires -Modules Microsoft.PowerShell.SecretManagement, SecretManagement.KeePass, Pode, Pode.Web
+<#
+.SYNOPSIS
+    RestAPI Pode Server
+.DESCRIPTION
+    A longer description of the function, its purpose, common use cases, etc.
+.NOTES
+    Information or caveats about the function
+.LINK
+    https://badgerati.github.io/Pode/Tutorials/Routes/Examples/RestApiSessions.
+.EXAMPLE
+    .\PSAutoMic\bin\Start-PSAutoMic.ps1
+    Start the RestAPI Server
+.EXAMPLE
+    $BearerToken = ''
+    $headers = @{
+        'Content-Type'  = 'application/json'
+        'Authorization' = "Bearer $BearerToken"
+    }
 
-# https://badgerati.github.io/Pode/Tutorials/Routes/Examples/RestApiSessions/
+    $body = @{
+        os        = 'almalinux'
+        imagename = 'almalinux_image'
+        container = 'almalinux_container'
+        hostname  = 'almalinux'
+        owner     = 'tinu'
+        action    = 'create'
+    } | ConvertTo-Json -Compress
+
+    $Properties = @{
+        Method  = 'POST'
+        Headers = $headers
+        Uri     = "http://localhost:8080/api/v1/docker"
+        Body    = $body
+    }
+    $response = Invoke-RestMethod @Properties
+
+    Start the RestAPI Call
+#>
 
 #region helper
 function Get-MWASecretsFromVault{
@@ -87,10 +123,38 @@ Start-PodeServer -Thread 2 {
         return $null
     }
 
+    # add a file watcher for the queue
+    Add-PodeFileWatcher -EventName Created -Path $($($PSScriptRoot) -replace 'bin','queue') -ScriptBlock {
+        # the Type will be set to "Created"
+        "[$($FileEvent.Type)]: $($FileEvent.Name)" | Out-Default
+        # file path
+        $FileEvent.FullPath | Out-Default
+        # get content from file
+        $JSON = Get-Content -Path $FileEvent.FullPath | ConvertFrom-Json
+        $Data = $JSON | Select-Object -Expandproperty Data -ErrorAction Stop
+        if($Data.Gettype().Name -ne 'PSCustomObject'){
+            $Data = $Data | ConvertFrom-Json
+        }
+        switch ($Data.Os){
+            'almalinux' {
+                "$($Data.Os) is implemented" | Out-Default
+                $Data | Out-Default
+            }
+            'ubuntu' {
+                "$($Data.Os) is implemented" | Out-Default
+                $Data | Out-Default
+            }
+            default {
+                "$($Data.Os) not implemented yet" | Out-Default
+            }
+        }
+        #Start-Process pwsh.exe $(Join-Path $PSScriptRoot -ChildPath "Build-Container.ps1")
+    }
+
     # set the api route
     Add-PodeRoute -Method Post -Path '/api/v1/docker' -Authentication 'Validate' -ContentType 'application/json' -ScriptBlock {
         # route logic
-        $ret = [PSCustomObject]@{
+        $data = [PSCustomObject]@{
             TimeStamp = Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'
             Uuid      = (New-Guid | Select-Object -ExpandProperty Guid)
             Source    = $env:COMPUTERNAME
@@ -98,10 +162,11 @@ Start-PodeServer -Thread 2 {
             Data      = $WebEvent.Data
         }
         # Out to the Terminal or for other logic
-        $ret | Out-PodeHost
+        $queue = $($($PSScriptRoot) -replace 'bin','queue')
+        $data | ConvertTo-Json | Out-File -FilePath $(Join-Path $queue -ChildPath "$($data.Uuid).json") -Encoding utf8
 
         # Rest response
-        Write-PodeJsonResponse -Value $($ret | ConvertTo-Json)
+        Write-PodeJsonResponse -Value (@{Uuid = $($data.Uuid)} | ConvertTo-Json)
     }
 
 }

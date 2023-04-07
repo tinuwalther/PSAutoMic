@@ -1,0 +1,35 @@
+FROM ubuntu:latest
+LABEL os="ubuntu"
+LABEL author="Martin Walther Foto & IT"
+LABEL content="Only the OS"
+LABEL release-date="2022-12-24"
+LABEL version="0.0.1-beta"
+ENV container docker
+
+RUN echo "*** Build Image ***"
+RUN apt install curl -y
+
+RUN echo "> Install Python 3.7"
+RUN apt update
+RUN apt install software-properties-common -y
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt install python3.7 -y
+RUN apt install python3-pip -y
+RUN python3.7 -m pip install --upgrade pip
+RUN python3 -m pip install six psutil lxml pyopenssl
+
+RUN echo "> Install PowerShell 7"
+RUN apt-get update
+RUN apt-get install wget apt-transport-https software-properties-common -y
+RUN wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+RUN dpkg -i packages-microsoft-prod.deb
+RUN apt-get update
+RUN apt-get install powershell -y
+
+COPY profile.ps1 /opt/microsoft/powershell/7
+RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
+RUN pwsh -Command "& {Install-Module -Name PSNetTools, VMware.PowerCLI}"
+RUN pwsh -Command "& {$null = Set-PowerCLIConfiguration -Scope User -ParticipateInCEIP $true -Confirm:$false}"
+RUN pwsh -Command "& {$null = Set-PowerCLIConfiguration -PythonPath '/usr/local/bin/python3.7'  -Scope User -Confirm:$false}"
+RUN mkdir /data
+RUN echo "*** Build finished ***"

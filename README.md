@@ -1,8 +1,17 @@
 # PSAutoMic
 
-Example with Pode Rest APIs
+Example with Pode Rest APIs.
 
-## Usage
+````mermaid
+sequenceDiagram
+    Postman->>RestAPI: invoke request
+    RestAPI->>FileWatcher: queue result
+    RestAPI->>FileWatcher: queue result
+    FileWatcher->>Docker: new docker container
+    FileWatcher->>Docker: new docker container
+````
+
+## Start Pode RestAPI
 
 ````powershell
 .\PSAutoMic\bin\Start-PSAutoMic.ps1
@@ -15,11 +24,31 @@ Listening on the following 1 endpoint(s) [2 thread(s)]:
 Keepass Master Password
 Enter the Keepass Master password for: C:\Users\Admin\OneDrive\Do*ument*\PSOctomes.kdbx
 Password for user Keepass Master Password: ********
+````
 
+## Request API Call
 
-TimeStamp : 2023-04-07 11:24:48.008
-Uuid      : f227ca7e-574b-49cf-90f4-6f7a365e8c67
-Source    : 2BFD5187
-Agent     : PostmanRuntime/7.31.3
-Data      : {[name, lnx1234], [version, 8], [action, create], [owner, tinu]…}
+````powershell
+$BearerToken = ''
+$headers = @{
+    'Content-Type'  = 'application/json'
+    'Authorization' = "Bearer $BearerToken"
+}
+
+$body = @{
+    os        = 'almalinux'
+    imagename = 'almalinux_image'
+    container = 'almalinux_container'
+    hostname  = 'almalinux'
+    owner     = 'tinu'
+    action    = 'create'
+} | ConvertTo-Json -Compress
+
+$Properties = @{
+    Method  = 'POST'
+    Headers = $headers
+    Uri     = "http://localhost:8080/api/v1/docker"
+    Body    = $body
+}
+$response = Invoke-RestMethod @Properties
 ````
