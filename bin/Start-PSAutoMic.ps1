@@ -54,14 +54,14 @@ Start-PodeServer -Thread 2 {
     
     # set the logging
     New-PodeLoggingMethod -File -Name 'requests' -MaxDays 3 | Enable-PodeRequestLogging
-    New-PodeLoggingMethod -File -Name 'errors' -MaxSize 512 | Enable-PodeErrorLogging
+    New-PodeLoggingMethod -File -Name 'errors' -MaxDays 3   | Enable-PodeErrorLogging
 
     # Here our sessions will last for 2 minutes, and will be extended on each request
     Enable-PodeSessionMiddleware -Duration 120 -Extend -UseHeaders
 
     # https://github.com/Badgerati/Pode/blob/develop/examples/web-auth-bearer.ps1
     New-PodeAuthScheme -Bearer -Scope write | Add-PodeAuth -Name 'Validate' -Sessionless -ScriptBlock {
-        param($token)
+        param($Token)
 
         #region secret from KeePass
         $SecretVault    = 'PSOctomes'
@@ -71,7 +71,7 @@ Start-PodeServer -Thread 2 {
         #endregion
 
         #region here you'd check a real user storage, this is just for example
-        if ($token -ieq $PSAutoMicToken){
+        if ($Token -ieq $PSAutoMicToken){
             return @{
                 User = @{
                     ID   = $Secret.Name
@@ -81,7 +81,7 @@ Start-PodeServer -Thread 2 {
                 Scope = 'write'
             }
         }else{
-           throw "Token not valid: $($token)"
+           throw "Token not valid: $($Token)"
         }
         #endregion
         return $null
