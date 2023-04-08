@@ -1,20 +1,17 @@
 FROM almalinux:latest
 LABEL os="almalinux"
 LABEL author="Martin Walther Foto & IT"
-LABEL content="almalinux with PowerCLI 13 and Python 3.7"
-LABEL release-date="2022-12-25"
+LABEL content="almalinux with PowerShell 7"
+LABEL release-date="2023-04-08"
 LABEL version="0.0.1-beta"
 ENV container docker
 
 RUN echo "*** Build Image ***"
-RUN dnf install wget -y
-
 RUN echo "> Install PowerShell 7"
 RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
 RUN rpm -Uvh https://packages.microsoft.com/config/centos/8/packages-microsoft-prod.rpm
 RUN dnf install powershell -y
 RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
-RUN pwsh -Command "& {Install-Module -Name PSNetTools}"
-RUN pwsh -Command "& {Set-PowerCLIConfiguration -Scope AllUser -ParticipateInCEIP $true -Confirm:'$false'}"
+RUN pwsh -Command "& {Install-Module -Name PSNetTools -PassThru}"
 COPY profile.ps1 /opt/microsoft/powershell/7
 RUN echo "*** Build finished ***"

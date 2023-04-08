@@ -126,14 +126,17 @@ Start-PodeServer -Thread 2 {
     # add a file watcher for the queue
     Add-PodeFileWatcher -EventName Created -Path $($($PSScriptRoot) -replace 'bin','queue') -ScriptBlock {
         # the Type will be set to "Created"
-        "[$($FileEvent.Type)]: $($FileEvent.Name)" | Out-Default
-        # file path
-        $FileEvent.FullPath | Out-Default
+        "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')] [$($FileEvent.Type)] $($FileEvent.Name)" | Out-Default
         $InstallArgs = @{}
         $InstallArgs.FilePath     = "pwsh.exe"
         $InstallArgs.ArgumentList = @()
         $InstallArgs.ArgumentList += "-file $(Join-Path $PSScriptRoot -ChildPath "Build-Container.ps1") $($FileEvent.FullPath)"
-        (Start-Process @InstallArgs -PassThru).ExitCode
+        Start-Process @InstallArgs
+    }
+
+    Add-PodeFileWatcher -EventName Deleted -Path $($($PSScriptRoot) -replace 'bin','queue') -ScriptBlock {
+        # the Type will be set to "Deleted"
+        "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')] [$($FileEvent.Type)] $($FileEvent.Name)" | Out-Default
     }
 
     # set the api route
