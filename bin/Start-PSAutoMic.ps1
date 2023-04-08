@@ -1,18 +1,19 @@
-#Requires -Modules Microsoft.PowerShell.SecretManagement, SecretManagement.KeePass, Pode, Pode.Web
+#Requires -Modules Microsoft.PowerShell.SecretManagement, SecretManagement.KeePass, Pode
 <#
 .SYNOPSIS
     RestAPI Pode Server
 .DESCRIPTION
-    A longer description of the function, its purpose, common use cases, etc.
+    Create or delete a Linux container and image on Docker Desktop over PowerShell RestAPI.
 .NOTES
     Information or caveats about the function
 .LINK
     https://badgerati.github.io/Pode/Tutorials/Routes/Examples/RestApiSessions.
+    https://github.com/Badgerati/Pode/blob/develop/examples/web-auth-bearer.ps1
 .EXAMPLE
     .\PSAutoMic\bin\Start-PSAutoMic.ps1
     Start the RestAPI Server
 .EXAMPLE
-    $BearerToken = ''
+    $BearerToken = ""
     $headers = @{
         'Content-Type'  = 'application/json'
         'Authorization' = "Bearer $BearerToken"
@@ -20,9 +21,9 @@
 
     $body = @{
         os        = 'almalinux'
-        imagename = 'almalinux_image'
-        container = 'almalinux_container'
-        hostname  = 'almalinux'
+        imagename = 'almal_image'
+        container = 'almal_container'
+        hostname  = 'almalnx'
         owner     = 'tinu'
         action    = 'create'
     } | ConvertTo-Json -Compress
@@ -34,8 +35,32 @@
         Body    = $body
     }
     $response = Invoke-RestMethod @Properties
+    Start the RestAPI to create a new almalinux on Docker Desktop.
 
-    Start the RestAPI Call
+.EXAMPLE
+    $BearerToken = ""
+    $headers = @{
+        'Content-Type'  = 'application/json'
+        'Authorization' = "Bearer $BearerToken"
+    }
+
+    $body = @{
+        os        = 'almalinux'
+        imagename = 'almal_image'
+        container = 'almal_container'
+        hostname  = 'almalnx'
+        owner     = 'tinu'
+        action    = 'delete'
+    } | ConvertTo-Json -Compress
+
+    $Properties = @{
+        Method  = 'POST'
+        Headers = $headers
+        Uri     = "http://localhost:8080/api/v1/docker"
+        Body    = $body
+    }
+    $response = Invoke-RestMethod @Properties
+    Start the RestAPI to remove the almalinux on Docker Desktop.
 #>
 
 #region helper
@@ -123,7 +148,7 @@ Start-PodeServer -Thread 2 {
         return $null
     }
 
-    # add a file watcher for the queue
+    # add a file watcher to create requests from the queue
     Add-PodeFileWatcher -EventName Created -Path $($($PSScriptRoot) -replace 'bin','queue') -ScriptBlock {
         # the Type will be set to "Created"
         "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')] [$($FileEvent.Type)] $($FileEvent.Name)" | Out-Default
@@ -134,12 +159,13 @@ Start-PodeServer -Thread 2 {
         Start-Process @InstallArgs
     }
 
+    # add file watcher to remove files from the queue
     Add-PodeFileWatcher -EventName Deleted -Path $($($PSScriptRoot) -replace 'bin','queue') -ScriptBlock {
         # the Type will be set to "Deleted"
         "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')] [$($FileEvent.Type)] $($FileEvent.Name)" | Out-Default
     }
 
-    # set the api route
+    # set the api route and logic
     Add-PodeRoute -Method Post -Path '/api/v1/docker' -Authentication 'Validate' -ContentType 'application/json' -ScriptBlock {
         # route logic
         $continue = $false

@@ -2,7 +2,7 @@ FROM ubuntu:latest
 LABEL os="ubuntu"
 LABEL author="tinu"
 LABEL content="ubuntu with PowerShell 7"
-LABEL release-date="2023-04-08 13:59:12"
+LABEL release-date="2023-04-08 16:25:19"
 LABEL version="0.0.1-beta"
 ENV container docker
 RUN echo "*** Build Image ***"
