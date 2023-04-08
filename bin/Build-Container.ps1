@@ -69,7 +69,7 @@ RUN echo "*** Build Image ***"
 RUN apt-get update
 RUN echo "> Install PowerShell 7"
 RUN apt-get install -y wget apt-transport-https software-properties-common
-RUN wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+RUN wget -q "https://packages.microsoft.com/config/ubuntu/`$(lsb_release -rs)/packages-microsoft-prod.deb"
 RUN dpkg -i packages-microsoft-prod.deb
 RUN rm packages-microsoft-prod.deb
 RUN apt-get update
@@ -90,11 +90,10 @@ RUN echo "*** Build finished ***"
     # Run Snyk tests against images to find vulnerabilities and learn how to fix them
     docker build -f .\dockerfile -t $imagename .
     docker scout cves $imagename
+
+    # remove json-file
     Remove-Item -Path $($FileFullPath) -Confirm:$false -Force
 
     # Start the container interactive
     docker run -e TZ="Europe/Zurich" --hostname $hostname --name $container --network custom -it $imagename /bin/bash
-
-    #docker start $Container
-    #docker exec -it $Container /bin/bash
 }

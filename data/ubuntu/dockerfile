@@ -1,11 +1,10 @@
 FROM ubuntu:latest
 LABEL os="ubuntu"
-LABEL author="Martin Walther Foto & IT"
+LABEL author="tinu"
 LABEL content="ubuntu with PowerShell 7"
-LABEL release-date="2023-04-08"
+LABEL release-date="2023-04-08 13:59:12"
 LABEL version="0.0.1-beta"
 ENV container docker
-
 RUN echo "*** Build Image ***"
 RUN apt-get update
 RUN echo "> Install PowerShell 7"

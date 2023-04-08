@@ -1,11 +1,10 @@
 FROM almalinux:latest
 LABEL os="almalinux"
-LABEL author="Martin Walther Foto & IT"
+LABEL author="tinu"
 LABEL content="almalinux with PowerShell 7"
-LABEL release-date="2023-04-08"
+LABEL release-date="2023-04-08 13:55:51"
 LABEL version="0.0.1-beta"
 ENV container docker
-
 RUN echo "*** Build Image ***"
 RUN echo "> Install PowerShell 7"
 RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc

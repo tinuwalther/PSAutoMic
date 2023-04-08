@@ -26,7 +26,9 @@ Enter the Keepass Master password for: C:\Users\Admin\OneDrive\Do*ument*\PSOctom
 Password for user Keepass Master Password: ********
 ````
 
-## Request API Call
+![Start-RestAPI](./img/Start-RestAPI.png)
+
+## Request a Linux over PowerShell
 
 ````powershell
 $BearerToken = ''
@@ -52,3 +54,25 @@ $Properties = @{
 }
 $response = Invoke-RestMethod @Properties
 ````
+
+## Request a Linux over Postman
+
+Send a RestAPI call to create an almalinux over Postman:
+
+![Request-Almalinux](./img/Request-Almalinux.png)
+
+Send a RestAPI call to create a ubuntu over Postman:
+
+![Request-Ubuntu](./img/Request-Ubuntu.png)
+
+Almalinux is created:
+
+![Created-Almalinux](./img/Created-Almalinux.png)
+
+Ubuntu is created:
+
+![Created-Ubuntu](./img/Created-Ubuntu.png)
+
+Docker containers:
+
+![Docker-Containers](./img/Docker-Containers.png)
