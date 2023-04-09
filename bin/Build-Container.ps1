@@ -46,8 +46,6 @@ function New-DockerAsset {
         [Object]$Data
     )
     
-    $imagename = $($Data.imagename)
-
     $root = $($PSScriptRoot) -replace 'bin','data'
     Set-Location (Join-Path -Path $root -ChildPath $($Data.Os))
 

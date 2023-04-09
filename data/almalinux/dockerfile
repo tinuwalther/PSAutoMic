@@ -2,7 +2,7 @@ FROM almalinux:latest
 LABEL os="almalinux"
 LABEL author="tinu"
 LABEL content="almalinux with PowerShell 7"
-LABEL release-date="2023-04-08 16:40:00"
+LABEL release-date="2023-04-09 10:41:27"
 LABEL version="0.0.1-beta"
 ENV container docker
 RUN echo "*** Build Image ***"
