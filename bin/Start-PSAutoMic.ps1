@@ -14,26 +14,26 @@
     Start the RestAPI Server
 .EXAMPLE
     $BearerToken = ""
-    $headers = @{
-        'Content-Type'  = 'application/json'
-        'Authorization' = "Bearer $BearerToken"
-    }
+$headers = @{
+    'Content-Type'  = 'application/json'
+    'Authorization' = "Bearer $BearerToken"
+}
 
-    $body = @{
-        os        = 'almalinux'
-        imagename = 'almal_image'
-        container = 'almal_container'
-        hostname  = 'almalnx'
-        owner     = 'tinu'
-        action    = 'create'
-    } | ConvertTo-Json -Compress
+$body = @{
+    os        = 'almalinux'
+    imagename = 'almal_image'
+    container = 'almal_container'
+    hostname  = 'almalnx'
+    owner     = 'tinu'
+    action    = 'create'
+} | ConvertTo-Json -Compress
 
-    $Properties = @{
-        Method  = 'POST'
-        Headers = $headers
-        Uri     = "http://localhost:8080/api/v1/docker"
-        Body    = $body
-    }
+$Properties = @{
+    Method  = 'POST'
+    Headers = $headers
+    Uri     = "http://localhost:8080/api/v1/docker"
+    Body    = $body
+}
     $response = Invoke-RestMethod @Properties
     Start the RestAPI to create a new almalinux on Docker Desktop.
 
