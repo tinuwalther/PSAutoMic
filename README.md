@@ -125,4 +125,4 @@ Docker containers:
 
 ## Watch the video
 
-[![Watch the video](https://i.imgur.com/vKb2F1B.png)](./img/PodeRestAPI.mp4)
+[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/UY6kVv6NhA4)
