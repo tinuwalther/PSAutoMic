@@ -123,6 +123,6 @@ Docker containers:
 
 ![Docker-Containers](./img/Docker-Containers.png)
 
-## Watch the video
+## Watch the video on Youtube
 
-[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/UY6kVv6NhA4)
+[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/0CRH4Nsnyyw)
