@@ -71,6 +71,7 @@ RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trust
 RUN pwsh -Command "& {Install-Module -Name PSNetTools -PassThru}"
 COPY profile.ps1 /opt/microsoft/powershell/7
 RUN echo "*** Build finished ***"
+ENTRYPOINT pwsh -NoLogo
 "@
 
 $ubuntu = @"
@@ -88,6 +89,7 @@ COPY profile.ps1 /opt/microsoft/powershell/7
 RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
 RUN pwsh -Command "& {Install-Module -Name PSNetTools -PassThru}"
 RUN echo "*** Build finished ***"
+ENTRYPOINT pwsh -NoLogo
 "@
 #endregion
 
@@ -101,14 +103,18 @@ RUN echo "*** Build finished ***"
     $container = docker ps -a --filter "Name=$($Data.container)" --format "{{.Names}}"
     if([String]::IsNullOrEmpty($container)){
         # Run Snyk tests against images to find vulnerabilities and learn how to fix them
+        Write-Host "Create DockerAsset $($Data.imagename), $($Data.container)" -ForegroundColor Green
+        Start-Sleep -Seconds 3
         docker build -f .\dockerfile -t $($Data.imagename) .
-        docker scout cves $($Data.imagename)
+        #docker scout cves $($Data.imagename)
 
         # remove json-file
         Remove-Item -Path $($FileFullPath) -Confirm:$false -Force
 
         # Start the container interactive
         docker run -e TZ="Europe/Zurich" --hostname $($Data.hostname) --name $($Data.container) --network custom -it $($Data.imagename) /bin/bash
+        #pwsh -NoLogo -Command Test-PsNetDig google.com
+        #printf "\033c"
     }else{
         Write-Host "$container already exists" -ForegroundColor Yellow
         Pause
@@ -140,9 +146,13 @@ function Remove-DockerAsset {
     $container = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Names}}"
     #$status    = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Status}}"
     if($container -like $($Data.container)){
+        Write-Host "Remove Docker container $($container)" -ForegroundColor Green
+        Start-Sleep -Seconds 3
         docker container rm --force $container
     }
     if($image -like $($Data.imagename)){
+        Write-Host "Remove Docker image $($image)" -ForegroundColor Green
+        Start-Sleep -Seconds 3
         docker image rm --force $image
     }
     
