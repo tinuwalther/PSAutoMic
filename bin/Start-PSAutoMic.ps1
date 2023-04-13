@@ -76,7 +76,7 @@ function Get-MWASecretsFromVault{
     begin{
         #region Do not change this region
         $StartTime = Get-Date
-        $function = $($MyInvocation.MyCommand.Name)
+        $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
         #endregion
         $ret = $null # or @()
@@ -119,7 +119,7 @@ function Invoke-BearerAuthtication{
     begin{
         #region Do not change this region
         $StartTime = Get-Date
-        $function = $($MyInvocation.MyCommand.Name)
+        $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
         #endregion
     }
@@ -175,7 +175,7 @@ function New-AssetToQueue{
     begin{
         #region Do not change this region
         $StartTime = Get-Date
-        $function = $($MyInvocation.MyCommand.Name)
+        $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
         #endregion
     }
@@ -214,7 +214,7 @@ function Remove-AssetFromQueue{
     begin{
         #region Do not change this region
         $StartTime = Get-Date
-        $function = $($MyInvocation.MyCommand.Name)
+        $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
         #endregion
     }
@@ -247,7 +247,7 @@ function Add-PodeApiEndpoint{
     begin{
         #region Do not change this region
         $StartTime = Get-Date
-        $function = $($MyInvocation.MyCommand.Name)
+        $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
         #endregion
     }
@@ -301,10 +301,9 @@ Clear-Host
 
 Start-PodeServer -Thread 2 {
 
-    $function = 'Start-PodeServer'
+    $script:PSScriptRoot
+    $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> Start-PodeServer"
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
-
-    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "Running Pode server on $($PSScriptRoot)" -Join ' ')
 
     # create the endpoint
     Add-PodeEndpoint -Address localhost -Port 8080 -Protocol Http

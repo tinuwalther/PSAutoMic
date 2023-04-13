@@ -46,6 +46,8 @@ function New-DockerAsset {
         [Object]$Data
     )
     
+    $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
+
     $root = $($PSScriptRoot) -replace 'bin','data'
     Set-Location (Join-Path -Path $root -ChildPath $($Data.Os))
 
@@ -103,10 +105,11 @@ ENTRYPOINT pwsh -NoLogo
     $container = docker ps -a --filter "Name=$($Data.container)" --format "{{.Names}}"
     if([String]::IsNullOrEmpty($container)){
         # Run Snyk tests against images to find vulnerabilities and learn how to fix them
-        Write-Host "Create DockerAsset $($Data.imagename), $($Data.container)" -ForegroundColor Green
+        Write-Host "$($function): Create DockerAsset $($Data.imagename), $($Data.container)" -ForegroundColor Green
+        Write-PSFMessage -Level Verbose -Message "Create DockerAsset {0}, {1}" -StringValues $($Data.imagename), $($Data.container)
         Start-Sleep -Seconds 3
         docker build -f .\dockerfile -t $($Data.imagename) .
-        #docker scout cves $($Data.imagename)
+        docker scout cves $($Data.imagename)
 
         # remove json-file
         Remove-Item -Path $($FileFullPath) -Confirm:$false -Force
@@ -142,16 +145,18 @@ function Remove-DockerAsset {
         [Object]$Data
     )
 
+    $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
     $image     = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Image}}"
     $container = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Names}}"
     #$status    = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Status}}"
+    Write-PSFMessage -Level Verbose -Message "Remove DockerAsset {0}, {1}" -StringValues $($Data.imagename), $($Data.container)
     if($container -like $($Data.container)){
-        Write-Host "Remove Docker container $($container)" -ForegroundColor Green
+        Write-Host "$($function): Remove Docker container $($container)" -ForegroundColor Green
         Start-Sleep -Seconds 3
         docker container rm --force $container
     }
     if($image -like $($Data.imagename)){
-        Write-Host "Remove Docker image $($image)" -ForegroundColor Green
+        Write-Host "$($function): Remove Docker image $($image)" -ForegroundColor Green
         Start-Sleep -Seconds 3
         docker image rm --force $image
     }
