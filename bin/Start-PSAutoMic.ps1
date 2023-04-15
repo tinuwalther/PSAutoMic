@@ -76,7 +76,7 @@ function Get-MWASecretsFromVault{
     begin{
         #region Do not change this region
         $StartTime = Get-Date
-        $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
+        $function = "$($MyInvocation.MyCommand.Name)"
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
         #endregion
         $ret = $null # or @()
@@ -119,13 +119,15 @@ function Invoke-BearerAuthtication{
     begin{
         #region Do not change this region
         $StartTime = Get-Date
-        $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
+        $function = "$($MyInvocation.MyCommand.Name)"
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
         #endregion
     }
 
     process{
+        Write-PSFMessage -FunctionName $function -Level Verbose -Message "Initialize {0}" -StringValues $function
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', $function -Join ' ')
+
         New-PodeAuthScheme -Bearer -Scope write | Add-PodeAuth -Name 'Validate' -Sessionless -ScriptBlock {
             param($Token)
 
@@ -172,20 +174,24 @@ function Invoke-BearerAuthtication{
 function New-AssetToQueue{
     [CmdletBinding()]
     param()
+
     begin{
         #region Do not change this region
         $StartTime = Get-Date
-        $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
+        $function = "$($MyInvocation.MyCommand.Name)"
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
         #endregion
     }
 
     process{
+        Write-PSFMessage -FunctionName $function -Level Verbose -Message "Initialize {0}" -StringValues $function
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', $function -Join ' ')
 
-        Add-PodeFileWatcher -EventName Created -Path $($($PSScriptRoot) -replace 'bin','queue') -ScriptBlock {
+        Add-PodeFileWatcher -EventName Created -Path $($($PSScriptRoot) -replace 'bin','queue') -ArgumentList $function -ScriptBlock {
+            param($function)
             # the Type will be set to "Created"
-            "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')] [$($FileEvent.Type)] $($FileEvent.Name)" | Out-Default
+            Write-PSFMessage -FunctionName $function -Level Host -Message "{0} {1}" -StringValues $($FileEvent.Type), $($FileEvent.Name)
+            #"[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')] [$($FileEvent.Type)] $($FileEvent.Name)" | Out-Default
             $InstallArgs = @{}
             $InstallArgs.FilePath     = "pwsh.exe"
             $InstallArgs.ArgumentList = @()
@@ -214,16 +220,20 @@ function Remove-AssetFromQueue{
     begin{
         #region Do not change this region
         $StartTime = Get-Date
-        $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
+        $function = "$($MyInvocation.MyCommand.Name)"
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
         #endregion
     }
 
     process{
+        Write-PSFMessage -FunctionName $function -Level Verbose -Message "Initialize {0}" -StringValues $function
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', $function -Join ' ')
-        Add-PodeFileWatcher -EventName Deleted -Path $($($PSScriptRoot) -replace 'bin','queue') -ScriptBlock {
+        
+        Add-PodeFileWatcher -EventName Deleted -Path $($($PSScriptRoot) -replace 'bin','queue') -ArgumentList $function -ScriptBlock {
+            param($function)
             # the Type will be set to "Deleted"
-            "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')] [$($FileEvent.Type)] $($FileEvent.Name)" | Out-Default
+            Write-PSFMessage -FunctionName $function -Level Host -Message "{0} {1}" -StringValues $($FileEvent.Type), $($FileEvent.Name)
+            #"[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')] [$($FileEvent.Type)] $($FileEvent.Name)" | Out-Default
         }
     }
 
@@ -247,14 +257,17 @@ function Add-PodeApiEndpoint{
     begin{
         #region Do not change this region
         $StartTime = Get-Date
-        $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
+        $function = "$($MyInvocation.MyCommand.Name)"
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
         #endregion
     }
 
-    process{
+    process {
+        Write-PSFMessage -FunctionName $function -Level Verbose -Message "Initialize {0}" -StringValues $function
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', $function -Join ' ')
-        Add-PodeRoute -Method Post -Path '/api/v1/docker' -Authentication 'Validate' -ContentType 'application/json' -ScriptBlock {
+        
+        Add-PodeRoute -Method Post -Path '/api/v1/docker' -Authentication 'Validate' -ContentType 'application/json' -ArgumentList $function -ScriptBlock {
+            param($function)
             # route logic
             $continue = $false
             $body = [PSCustomObject]$WebEvent.Data #| ConvertFrom-Json
@@ -277,6 +290,7 @@ function Add-PodeApiEndpoint{
                 $data | ConvertTo-Json | Out-File -FilePath $(Join-Path $queue -ChildPath "$($data.Uuid).json") -Encoding utf8
         
                 # Rest response
+                Write-PSFMessage -FunctionName $function -Level Verbose -Message "Process {0}" -StringValues $($data.Uuid) -Target $($data.Agent)
                 Write-PodeJsonResponse -Value (@{Uuid = $($data.Uuid)} | ConvertTo-Json)
             }else{
                 Write-PodeJsonResponse -Value (@{Uuid = "$($body.Os) not implemented yet"} | ConvertTo-Json)
@@ -297,12 +311,26 @@ function Add-PodeApiEndpoint{
 }
 #endregion
 
+$Scriptname = $([System.IO.FileInfo]::new($($PSCommandPath)).BaseName)
+
+# Setting up the logging
+$paramSetPSFLoggingProvider = @{
+    Name         = 'logfile'
+    InstanceName = $Scriptname
+    FilePath     = Join-Path -Path "$($PSScriptRoot)/logs" -ChildPath "api_%Date%.log"
+    Enabled      = $true
+}
+Set-PSFLoggingProvider @paramSetPSFLoggingProvider
+
 Clear-Host
+
+"Running $Scriptname" | Out-Default
 
 Start-PodeServer -Thread 2 {
 
-    $script:PSScriptRoot
-    $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> Start-PodeServer"
+    $function = "Start-PodeApiServer"
+    Write-PSFMessage -FunctionName $function -Level Verbose -Message "Begin {0}" -StringValues $function, $($PSScriptRoot), ([System.IO.FileInfo]::new($($PSCommandPath)).Name) -ErrorRecord $_
+
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', $function -Join ' ')
 
     # create the endpoint
@@ -327,6 +355,8 @@ Start-PodeServer -Thread 2 {
     # set the api route and logic
     Add-PodeApiEndpoint
 
+    Write-PSFMessage -FunctionName $function -Level Verbose -Message "Process API" -StringValues $function, $($PSScriptRoot), ([System.IO.FileInfo]::new($($PSCommandPath)).Name) -ErrorRecord $_
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', $function -Join ' ')
     Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 }
+ 

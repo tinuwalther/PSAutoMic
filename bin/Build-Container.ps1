@@ -7,6 +7,10 @@
     Information or caveats about the function
     docker images -a
     docker container ls -a --filter "Name=alma_container" --format "{{.Status}}"
+
+    Docker Scout:
+    "$($env:TEMP)\docker-scout"
+
 .LINK
     Specify a URI to a help page, this will show when Get-Help -Online is used.
 .EXAMPLE
@@ -46,7 +50,8 @@ function New-DockerAsset {
         [Object]$Data
     )
     
-    $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
+    $function = "$($MyInvocation.MyCommand.Name)"
+    Write-PSFMessage -Level Verbose -Message "Initialize {0}" -StringValues $function
 
     $root = $($PSScriptRoot) -replace 'bin','data'
     Set-Location (Join-Path -Path $root -ChildPath $($Data.Os))
@@ -105,8 +110,8 @@ ENTRYPOINT pwsh -NoLogo
     $container = docker ps -a --filter "Name=$($Data.container)" --format "{{.Names}}"
     if([String]::IsNullOrEmpty($container)){
         # Run Snyk tests against images to find vulnerabilities and learn how to fix them
-        Write-Host "$($function): Create DockerAsset $($Data.imagename), $($Data.container)" -ForegroundColor Green
-        Write-PSFMessage -Level Verbose -Message "Create DockerAsset {0}, {1}" -StringValues $($Data.imagename), $($Data.container)
+        #Write-Host "$($function): Create DockerAsset $($Data.imagename), $($Data.container)" -ForegroundColor Green
+        Write-PSFMessage -Level Host -Message "{0}: Create {1} {2}" -StringValues $function, $($Data.imagename), $($Data.container)
         Start-Sleep -Seconds 3
         docker build -f .\dockerfile -t $($Data.imagename) .
         docker scout cves $($Data.imagename)
@@ -145,27 +150,41 @@ function Remove-DockerAsset {
         [Object]$Data
     )
 
-    $function = "$($script:PSScriptRoot) -> $([System.IO.FileInfo]::new($($PSCommandPath)).Name) -> $($MyInvocation.MyCommand.Name)"
+    $function = "$($MyInvocation.MyCommand.Name)"
+    Write-PSFMessage -Level Verbose -Message "Initialize {0}" -StringValues $function
+
     $image     = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Image}}"
     $container = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Names}}"
-    #$status    = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Status}}"
-    Write-PSFMessage -Level Verbose -Message "Remove DockerAsset {0}, {1}" -StringValues $($Data.imagename), $($Data.container)
+    Write-PSFMessage -Level Verbose -Message "{0}: {1} {2}" -StringValues $function, $($Data.imagename), $($Data.container)
     if($container -like $($Data.container)){
-        Write-Host "$($function): Remove Docker container $($container)" -ForegroundColor Green
+        Write-PSFMessage -Level Host -Message "{0}: Remove {1}" -StringValues $function, $($container)
+        #Write-Host "$($function): Remove Docker container $($container)" -ForegroundColor Green
         Start-Sleep -Seconds 3
-        docker container rm --force $container
+        $null = docker container rm --force $container
     }
     if($image -like $($Data.imagename)){
-        Write-Host "$($function): Remove Docker image $($image)" -ForegroundColor Green
+        Write-PSFMessage -Level Host -Message "{0}: Remove {1}" -StringValues $function, $($image)
+        #Write-Host "$($function): Remove Docker image $($image)" -ForegroundColor Green
         Start-Sleep -Seconds 3
         docker image rm --force $image
     }
-    
+    Start-Sleep -Seconds 5
     # remove json-file
     Remove-Item -Path $($FileFullPath) -Confirm:$false -Force
 
 }
 #endregion
+
+$Scriptname = $([System.IO.FileInfo]::new($($PSCommandPath)).BaseName)
+
+# Setting up the logging
+$paramSetPSFLoggingProvider = @{
+    Name         = 'logfile'
+    InstanceName = $Scriptname
+    FilePath     = Join-Path -Path "$($PSScriptRoot)/logs" -ChildPath "queue_%Date%.log"
+    Enabled      = $true
+}
+Set-PSFLoggingProvider @paramSetPSFLoggingProvider
 
 if(Test-Path -Path $FileFullPath){
     $JSON = Get-Content -Path $FileFullPath | ConvertFrom-Json
@@ -176,10 +195,14 @@ if(Test-Path -Path $FileFullPath){
 
     switch($Data.action){
         'create' {
+            Write-PSFMessage -Level Host -Message "New-DockerAsset"
             New-DockerAsset -FileFullPath $FileFullPath -Data $Data
+            continue
         }
         'delete' {
+            Write-PSFMessage -Level Host -Message "Remove-DockerAsset"
             Remove-DockerAsset -FileFullPath $FileFullPath -Data $Data
+            continue
         }
     }
 

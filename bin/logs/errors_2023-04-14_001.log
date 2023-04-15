@@ -1,0 +1,265 @@
+Date: 2023-04-14 18:45:05
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: NotSpecified: (:) [Get-MWASecretsFromVault], MethodInvocationException
+Message: Exception calling ".ctor" with "1" argument(s): "The path is empty. (Parameter 'path')"
+StackTrace: at <ScriptBlock><Begin>, <No file>: line 10
+at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 134
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 551
+at <ScriptBlock>, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Private\Authentication.ps1: line 1165
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at Invoke-PodeMiddleware, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Private\Middleware.ps1: line 45
+at <ScriptBlock>, <No file>: line 87
+
+Date: 2023-04-14 18:46:41
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: NotSpecified: (:) [Get-MWASecretsFromVault], MethodInvocationException
+Message: Exception calling ".ctor" with "1" argument(s): "The path is empty. (Parameter 'path')"
+StackTrace: at <ScriptBlock><Begin>, <No file>: line 10
+at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 134
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 551
+at <ScriptBlock>, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Private\Authentication.ps1: line 1165
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at Invoke-PodeMiddleware, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Private\Middleware.ps1: line 45
+at <ScriptBlock>, <No file>: line 87
+
+Date: 2023-04-14 18:49:11
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: NotSpecified: (:) [Get-MWASecretsFromVault], MethodInvocationException
+Message: Exception calling ".ctor" with "1" argument(s): "The path is empty. (Parameter 'path')"
+StackTrace: at <ScriptBlock><Begin>, <No file>: line 10
+at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 134
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 551
+at <ScriptBlock>, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Private\Authentication.ps1: line 1165
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at Invoke-PodeMiddleware, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Private\Middleware.ps1: line 45
+at <ScriptBlock>, <No file>: line 87
+
+Date: 2023-04-14 22:06:17
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: InvalidArgument: (:) [Invoke-PodeScriptBlock], ParameterBindingException
+Message: Missing an argument for parameter 'Level'. Specify a parameter of type 'PSFramework.Message.MessageLevel' and try again.
+StackTrace: at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 229
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at <ScriptBlock>, <No file>: line 60
+
+Date: 2023-04-14 22:06:17
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Missing an argument for parameter 'Level'. Specify a parameter of type 'PSFramework.Message.MessageLevel' and try again.
+StackTrace:    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at Invoke-PodeScriptBlock(Closure, FunctionContext)
+   at System.Management.Automation.PSScriptCmdlet.RunClause(Action`1 clause, Object dollarUnderbar, Object inputToProcess)
+   at System.Management.Automation.CommandProcessorBase.Complete()
+
+Date: 2023-04-14 22:08:12
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: InvalidArgument: (:) [Invoke-PodeScriptBlock], ParameterBindingException
+Message: Missing an argument for parameter 'Level'. Specify a parameter of type 'PSFramework.Message.MessageLevel' and try again.
+StackTrace: at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 229
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at <ScriptBlock>, <No file>: line 60
+
+Date: 2023-04-14 22:08:12
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Missing an argument for parameter 'Level'. Specify a parameter of type 'PSFramework.Message.MessageLevel' and try again.
+StackTrace:    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at Invoke-PodeScriptBlock(Closure, FunctionContext)
+   at System.Management.Automation.PSScriptCmdlet.RunClause(Action`1 clause, Object dollarUnderbar, Object inputToProcess)
+   at System.Management.Automation.CommandProcessorBase.Complete()
+
+Date: 2023-04-14 22:28:13
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: InvalidOperation: ([{0}] {1}} Process {2} -> {3}:String) [Invoke-PodeScriptBlock], RuntimeException
+Message: Error formatting a string: Input string was not in a correct format..
+StackTrace: at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 286
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at <ScriptBlock>, <No file>: line 106
+
+Date: 2023-04-14 22:28:13
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: InvalidOperation: ([{0}] {1}} {2} {3} -> {4}:String) [Invoke-PodeScriptBlock], RuntimeException
+Message: Error formatting a string: Input string was not in a correct format..
+StackTrace: at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 189
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at <ScriptBlock>, <No file>: line 60
+
+Date: 2023-04-14 22:28:13
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Error formatting a string: Input string was not in a correct format..
+StackTrace:    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at Invoke-PodeScriptBlock(Closure, FunctionContext)
+   at System.Management.Automation.PSScriptCmdlet.RunClause(Action`1 clause, Object dollarUnderbar, Object inputToProcess)
+   at System.Management.Automation.CommandProcessorBase.Complete()
+
+Date: 2023-04-14 22:28:13
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Error formatting a string: Input string was not in a correct format..
+StackTrace:    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at Invoke-PodeScriptBlock(Closure, FunctionContext)
+   at System.Management.Automation.PSScriptCmdlet.RunClause(Action`1 clause, Object dollarUnderbar, Object inputToProcess)
+   at System.Management.Automation.CommandProcessorBase.Complete()
+
+Date: 2023-04-14 22:28:52
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: InvalidOperation: ([{0}] {1}} {2} {3} -> {4}:String) [Invoke-PodeScriptBlock], RuntimeException
+Message: Error formatting a string: Input string was not in a correct format..
+StackTrace: at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 229
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at <ScriptBlock>, <No file>: line 60
+
+Date: 2023-04-14 22:28:52
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Error formatting a string: Input string was not in a correct format..
+StackTrace:    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at Invoke-PodeScriptBlock(Closure, FunctionContext)
+   at System.Management.Automation.PSScriptCmdlet.RunClause(Action`1 clause, Object dollarUnderbar, Object inputToProcess)
+   at System.Management.Automation.CommandProcessorBase.Complete()
+
+Date: 2023-04-14 22:30:06
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: InvalidOperation: ([{0}] {1}} Process {2} -> {3}:String) [Invoke-PodeScriptBlock], RuntimeException
+Message: Error formatting a string: Input string was not in a correct format..
+StackTrace: at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 286
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at <ScriptBlock>, <No file>: line 106
+
+Date: 2023-04-14 22:30:06
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Error formatting a string: Input string was not in a correct format..
+StackTrace:    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at Invoke-PodeScriptBlock(Closure, FunctionContext)
+   at System.Management.Automation.PSScriptCmdlet.RunClause(Action`1 clause, Object dollarUnderbar, Object inputToProcess)
+   at System.Management.Automation.CommandProcessorBase.Complete()
+
+Date: 2023-04-14 22:30:06
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: InvalidOperation: ([{0}] {1}} {2} {3} -> {4}:String) [Invoke-PodeScriptBlock], RuntimeException
+Message: Error formatting a string: Input string was not in a correct format..
+StackTrace: at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 189
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at <ScriptBlock>, <No file>: line 60
+
+Date: 2023-04-14 22:30:06
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Error formatting a string: Input string was not in a correct format..
+StackTrace:    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at Invoke-PodeScriptBlock(Closure, FunctionContext)
+   at System.Management.Automation.PSScriptCmdlet.RunClause(Action`1 clause, Object dollarUnderbar, Object inputToProcess)
+   at System.Management.Automation.CommandProcessorBase.Complete()
+
+Date: 2023-04-14 23:00:33
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: InvalidArgument: (:) [Invoke-PodeScriptBlock], ParameterBindingException
+Message: Cannot bind parameter 'ForegroundColor'. Cannot convert value "2023-04-14 23:00:33.904" to type "System.ConsoleColor". Error: "Unable to match the identifier name 2023-04-14 23:00:33.904 to a valid enumerator name. Specify one of the following enumerator names and try again:
+Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White"
+StackTrace: at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 189
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at <ScriptBlock>, <No file>: line 60
+
+Date: 2023-04-14 23:00:33
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Cannot bind parameter 'ForegroundColor'. Cannot convert value "2023-04-14 23:00:33.904" to type "System.ConsoleColor". Error: "Unable to match the identifier name 2023-04-14 23:00:33.904 to a valid enumerator name. Specify one of the following enumerator names and try again:
+Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White"
+StackTrace:    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at Invoke-PodeScriptBlock(Closure, FunctionContext)
+   at System.Management.Automation.PSScriptCmdlet.RunClause(Action`1 clause, Object dollarUnderbar, Object inputToProcess)
+   at System.Management.Automation.CommandProcessorBase.Complete()
+
+Date: 2023-04-14 23:00:33
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Cannot convert value "2023-04-14 23:00:33.904" to type "System.ConsoleColor". Error: "Unable to match the identifier name 2023-04-14 23:00:33.904 to a valid enumerator name. Specify one of the following enumerator names and try again:
+Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White"
+StackTrace:    at System.Management.Automation.LanguagePrimitives.ConvertStringToEnum(Object valueToConvert, Type resultType, Boolean recursion, PSObject originalValueToConvert, IFormatProvider formatProvider, TypeTable backupTable)
+   at System.Management.Automation.LanguagePrimitives.ConversionData`1.Invoke(Object valueToConvert, Type resultType, Boolean recurse, PSObject originalValueToConvert, IFormatProvider formatProvider, TypeTable backupTable)
+   at System.Management.Automation.LanguagePrimitives.ConvertTo(Object valueToConvert, Type resultType, Boolean recursion, IFormatProvider formatProvider, TypeTable backupTypeTable)
+   at System.Management.Automation.LanguagePrimitives.ConvertEnumerableToEnum(Object valueToConvert, Type resultType, Boolean recursion, PSObject originalValueToConvert, IFormatProvider formatProvider, TypeTable backupTable)
+   at System.Management.Automation.LanguagePrimitives.ConversionData`1.Invoke(Object valueToConvert, Type resultType, Boolean recurse, PSObject originalValueToConvert, IFormatProvider formatProvider, TypeTable backupTable)
+   at System.Management.Automation.LanguagePrimitives.ConvertTo(Object valueToConvert, Type resultType, Boolean recursion, IFormatProvider formatProvider, TypeTable backupTypeTable)
+   at System.Management.Automation.ParameterBinderBase.CoerceTypeAsNeeded(CommandParameterInternal argument, String parameterName, Type toType, ParameterCollectionTypeInformation collectionTypeInfo, Object currentValue)
+
+Date: 2023-04-14 23:02:54
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: InvalidArgument: (:) [Invoke-PodeScriptBlock], ParameterBindingException
+Message: Cannot bind parameter 'ForegroundColor'. Cannot convert value "2023-04-14 23:02:54.639" to type "System.ConsoleColor". Error: "Unable to match the identifier name 2023-04-14 23:02:54.639 to a valid enumerator name. Specify one of the following enumerator names and try again:
+Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White"
+StackTrace: at <ScriptBlock>, D:\DevOps\github.com\PSAutoMic\bin\Start-PSAutoMic.ps1: line 189
+at Invoke-PodeScriptBlock, C:\Program Files\PowerShell\Modules\Pode\2.8.0\Public\Utilities.ps1: line 543
+at <ScriptBlock>, <No file>: line 60
+
+Date: 2023-04-14 23:02:54
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Cannot bind parameter 'ForegroundColor'. Cannot convert value "2023-04-14 23:02:54.639" to type "System.ConsoleColor". Error: "Unable to match the identifier name 2023-04-14 23:02:54.639 to a valid enumerator name. Specify one of the following enumerator names and try again:
+Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White"
+StackTrace:    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at Invoke-PodeScriptBlock(Closure, FunctionContext)
+   at System.Management.Automation.PSScriptCmdlet.RunClause(Action`1 clause, Object dollarUnderbar, Object inputToProcess)
+   at System.Management.Automation.CommandProcessorBase.Complete()
+
+Date: 2023-04-14 23:02:54
+Level: Error
+ThreadId: 1
+Server: 2BFD5187
+Category: System.Management.Automation
+Message: Cannot convert value "2023-04-14 23:02:54.639" to type "System.ConsoleColor". Error: "Unable to match the identifier name 2023-04-14 23:02:54.639 to a valid enumerator name. Specify one of the following enumerator names and try again:
+Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White"
+StackTrace:    at System.Management.Automation.LanguagePrimitives.ConvertStringToEnum(Object valueToConvert, Type resultType, Boolean recursion, PSObject originalValueToConvert, IFormatProvider formatProvider, TypeTable backupTable)
+   at System.Management.Automation.LanguagePrimitives.ConversionData`1.Invoke(Object valueToConvert, Type resultType, Boolean recurse, PSObject originalValueToConvert, IFormatProvider formatProvider, TypeTable backupTable)
+   at System.Management.Automation.LanguagePrimitives.ConvertTo(Object valueToConvert, Type resultType, Boolean recursion, IFormatProvider formatProvider, TypeTable backupTypeTable)
+   at System.Management.Automation.LanguagePrimitives.ConvertEnumerableToEnum(Object valueToConvert, Type resultType, Boolean recursion, PSObject originalValueToConvert, IFormatProvider formatProvider, TypeTable backupTable)
+   at System.Management.Automation.LanguagePrimitives.ConversionData`1.Invoke(Object valueToConvert, Type resultType, Boolean recurse, PSObject originalValueToConvert, IFormatProvider formatProvider, TypeTable backupTable)
+   at System.Management.Automation.LanguagePrimitives.ConvertTo(Object valueToConvert, Type resultType, Boolean recursion, IFormatProvider formatProvider, TypeTable backupTypeTable)
+   at System.Management.Automation.ParameterBinderBase.CoerceTypeAsNeeded(CommandParameterInternal argument, String parameterName, Type toType, ParameterCollectionTypeInformation collectionTypeInfo, Object currentValue)
+

@@ -2,7 +2,7 @@ FROM ubuntu:latest
 LABEL os="ubuntu"
 LABEL author="tinu"
 LABEL content="ubuntu with PowerShell 7"
-LABEL release-date="2023-04-09 15:57:41"
+LABEL release-date="2023-04-14 19:14:39"
 LABEL version="0.0.1-beta"
 ENV container docker
 RUN echo "*** Build Image ***"
@@ -18,3 +18,4 @@ COPY profile.ps1 /opt/microsoft/powershell/7
 RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
 RUN pwsh -Command "& {Install-Module -Name PSNetTools -PassThru}"
 RUN echo "*** Build finished ***"
+ENTRYPOINT pwsh -NoLogo
