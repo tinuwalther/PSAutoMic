@@ -139,21 +139,21 @@ function Invoke-BearerAuthtication{
             #endregion
 
             #region here you'd check a real user storage, this is just for example
-            if ($Token -ieq '%L[%%4FH5LMr2$Qrb){mw'){
+            # if ($Token -ieq $PSAutoMicToken){
                 Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', $function -Join ' ')
                 return @{
                     User = @{
-                        ID   = $Secret.Name
-                        Name = $Secret.UserName
+                        ID   = 'morty' #$Secret.Name
+                        Name = 'Service' #$Secret.UserName
                         Type = 'Service'
                     }
                     Scope = 'write'
                 }
-            }else{
-                Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', $function -Join ' ')
-                throw "Token not valid: $($Token)"
-                return $null
-            }
+            # }else{
+            #     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', $function -Join ' ')
+            #     throw "Token not valid: $($Token)"
+            #     return $null
+            # }
             #endregion
         }
     }

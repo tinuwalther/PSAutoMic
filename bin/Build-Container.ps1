@@ -195,12 +195,12 @@ if(Test-Path -Path $FileFullPath){
 
     switch($Data.action){
         'create' {
-            Write-PSFMessage -Level Host -Message "New-DockerAsset"
+            Write-PSFMessage -FunctionName $Scriptname -Level Host -Message "New-DockerAsset"
             New-DockerAsset -FileFullPath $FileFullPath -Data $Data
             continue
         }
         'delete' {
-            Write-PSFMessage -Level Host -Message "Remove-DockerAsset"
+            Write-PSFMessage -FunctionName $Scriptname -Level Host -Message "Remove-DockerAsset"
             Remove-DockerAsset -FileFullPath $FileFullPath -Data $Data
             continue
         }
