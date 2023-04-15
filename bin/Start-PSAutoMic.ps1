@@ -132,14 +132,14 @@ function Invoke-BearerAuthtication{
             param($Token)
 
             #region secret from KeePass
-            $SecretVault    = 'PSOctomes'
-            $SecretObject   = (Get-MWASecretsFromVault -Vault $SecretVault).Where({$_.Name -match 'PSAutoMic'})
-            $Secret         = Get-Secret -Vault $SecretVault -Name $SecretObject.Name -ErrorAction Stop
-            $PSAutoMicToken = [System.Net.NetworkCredential]::new($Secret.UserName, $Secret.Password).Password
+            # $SecretVault    = 'PSOctomes'
+            # $SecretObject   = (Get-MWASecretsFromVault -Vault $SecretVault).Where({$_.Name -match 'PSAutoMic'})
+            # $Secret         = Get-Secret -Vault $SecretVault -Name $SecretObject.Name -ErrorAction Stop
+            # $PSAutoMicToken = [System.Net.NetworkCredential]::new($Secret.UserName, $Secret.Password).Password
             #endregion
 
             #region here you'd check a real user storage, this is just for example
-            if ($Token -ieq $PSAutoMicToken){
+            if ($Token -ieq '%L[%%4FH5LMr2$Qrb){mw'){
                 Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', $function -Join ' ')
                 return @{
                     User = @{
