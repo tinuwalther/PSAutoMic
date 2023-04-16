@@ -58,7 +58,7 @@ function New-DockerAsset {
 
 #region dockerfile
 $labels = @"
-FROM $($Data.Os):latest
+FROM $($Data.Os):$($Data.version)
 LABEL os="$($Data.Os)"
 LABEL author="$($Data.owner)"
 LABEL content="$($Data.Os) with PowerShell 7"
@@ -70,15 +70,15 @@ ENV container docker
 $alma = @"
 $($labels)
 RUN echo "*** Build Image ***"
+RUN dnf update -y
 RUN echo "> Install PowerShell 7"
 RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
 RUN rpm -Uvh https://packages.microsoft.com/config/centos/8/packages-microsoft-prod.rpm
 RUN dnf install powershell -y
 RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
-RUN pwsh -Command "& {Install-Module -Name PSNetTools -PassThru}"
+RUN pwsh -Command "& {Install-Module -Name PSNetTools, linuxinfo}"
 COPY profile.ps1 /opt/microsoft/powershell/7
 RUN echo "*** Build finished ***"
-ENTRYPOINT pwsh -NoLogo
 "@
 
 $ubuntu = @"
@@ -94,9 +94,8 @@ RUN apt-get update
 RUN apt-get install -y powershell
 COPY profile.ps1 /opt/microsoft/powershell/7
 RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
-RUN pwsh -Command "& {Install-Module -Name PSNetTools -PassThru}"
+RUN pwsh -Command "& {Install-Module -Name PSNetTools, linuxinfo}"
 RUN echo "*** Build finished ***"
-ENTRYPOINT pwsh -NoLogo
 "@
 #endregion
 
@@ -109,20 +108,20 @@ ENTRYPOINT pwsh -NoLogo
     #$container = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Names}}"
     $container = docker ps -a --filter "Name=$($Data.container)" --format "{{.Names}}"
     if([String]::IsNullOrEmpty($container)){
-        # Run Snyk tests against images to find vulnerabilities and learn how to fix them
         #Write-Host "$($function): Create DockerAsset $($Data.imagename), $($Data.container)" -ForegroundColor Green
         Write-PSFMessage -Level Host -Message "{0}: Create {1} {2}" -StringValues $function, $($Data.imagename), $($Data.container)
-        Start-Sleep -Seconds 3
         docker build -f .\dockerfile -t $($Data.imagename) .
-        docker scout cves $($Data.imagename)
+        # Run cves tests against images to find vulnerabilities and learn how to fix them
+        Write-PSFMessage -Level Host -Message "{0}: Analyze {1} for critical and high vulnerabilities" -StringValues $function, $($Data.imagename), $($Data.container)
+        docker scout cves $($Data.imagename) --only-severity "critical, high, medium" --details --exit-code
 
         # remove json-file
         Remove-Item -Path $($FileFullPath) -Confirm:$false -Force
 
         # Start the container interactive
-        docker run -e TZ="Europe/Zurich" --hostname $($Data.hostname) --name $($Data.container) --network custom -it $($Data.imagename) /bin/bash
-        #pwsh -NoLogo -Command Test-PsNetDig google.com
-        #printf "\033c"
+        docker run -e TZ="Europe/Zurich" --hostname $($Data.hostname) --name $($Data.container) --network custom -it $($Data.imagename) pwsh -NoLogo
+        #pwsh -NoLogo -Command Get-OSInfo
+        #Clear-Host -> printf "\033c"
     }else{
         Write-Host "$container already exists" -ForegroundColor Yellow
         Pause
@@ -159,16 +158,13 @@ function Remove-DockerAsset {
     if($container -like $($Data.container)){
         Write-PSFMessage -Level Host -Message "{0}: Remove {1}" -StringValues $function, $($container)
         #Write-Host "$($function): Remove Docker container $($container)" -ForegroundColor Green
-        Start-Sleep -Seconds 3
         $null = docker container rm --force $container
     }
     if($image -like $($Data.imagename)){
         Write-PSFMessage -Level Host -Message "{0}: Remove {1}" -StringValues $function, $($image)
         #Write-Host "$($function): Remove Docker image $($image)" -ForegroundColor Green
-        Start-Sleep -Seconds 3
         docker image rm --force $image
     }
-    Start-Sleep -Seconds 5
     # remove json-file
     Remove-Item -Path $($FileFullPath) -Confirm:$false -Force
 
