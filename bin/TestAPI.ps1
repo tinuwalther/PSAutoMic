@@ -6,13 +6,15 @@ $headers = @{
 
 # create
 $create = @{
-    os        = 'almalinux'
-    version   = '9' # 'latest'
-    imagename = 'alma_image'
-    container = 'alma_container'
     hostname  = 'almalnx'
-    owner     = 'tinu'
+    os        = 'almalinux'
+    version   = '9'
+    imagename = 'almal_image'
+    container = 'almal_container'
     action    = 'create'
+    owner     = 'tinu'
+    scout     = $false
+    pass      = ''
 } | ConvertTo-Json -Compress
 
 # delete

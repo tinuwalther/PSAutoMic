@@ -59,12 +59,15 @@ $headers = @{
 }
 
 $body = @{
+    hostname  = 'almalnx'
     os        = 'almalinux'
+    version   = '9'
     imagename = 'almal_image'
     container = 'almal_container'
-    hostname  = 'almalnx'
-    owner     = 'tinu'
     action    = 'create'
+    owner     = 'tinu'
+    scout     = $false
+    pass      = 'T0pS£creT!'
 } | ConvertTo-Json -Compress
 
 $Properties = @{
@@ -95,8 +98,6 @@ $body = @{
     os        = 'almalinux'
     imagename = 'almal_image'
     container = 'almal_container'
-    hostname  = 'almalnx'
-    owner     = 'tinu'
     action    = 'delete'
 } | ConvertTo-Json -Compress
 
