@@ -78,11 +78,13 @@ RUN dnf install sudo -y
 RUN echo "> Install PowerShell 7"
 RUN curl https://packages.microsoft.com/config/rhel/$($Data.version)/prod.repo | tee /etc/yum.repos.d/microsoft.repo
 RUN dnf install --assumeyes powershell
-RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
-RUN pwsh -Command "& {Install-Module -Name PSNetTools, linuxinfo}"
 RUN echo "Add new user $($Data.owner) to wheel"
 RUN useradd -m -g users -p `$(openssl passwd -1 $($passwordHashRoot)) $($Data.owner)
 RUN usermod -aG wheel $($Data.owner)
+RUN sudo pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
+RUN sudo pwsh -Command "& {Install-Module -Name Microsoft.PowerShell.PSResourceGet -Scope AllUsers -PassThru -Force -Verbose}"
+RUN sudo pwsh -Command "& {Set-PSResourceRepository -Name "PSGallery" -Priority 25 -Trusted -PassThru}"
+RUN sudo pwsh -Command "& {Install-PSResource -Name PSNetTools, linuxinfo -Scope AllUsers -PassThru -Verbose}"
 COPY profile.ps1 /opt/microsoft/powershell/7
 RUN echo "*** Build finished ***"
 "@
@@ -99,12 +101,14 @@ RUN dpkg -i packages-microsoft-prod.deb
 RUN rm packages-microsoft-prod.deb
 RUN apt-get update
 RUN apt-get install -y powershell
-RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
-RUN pwsh -Command "& {Install-Module -Name PSNetTools, linuxinfo}"
 RUN apt install sudo
 RUN echo "Add new user $($Data.owner) to sudo"
 RUN sudo useradd -m -g users -p `$(openssl passwd -1 $($passwordHashRoot)) $($Data.owner)
 RUN sudo usermod -aG sudo $($Data.owner)
+RUN sudo pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
+RUN sudo pwsh -Command "& {Install-Module -Name Microsoft.PowerShell.PSResourceGet -Scope AllUsers -PassThru -Force -Verbose}"
+RUN sudo pwsh -Command "& {Set-PSResourceRepository -Name "PSGallery" -Priority 25 -Trusted -PassThru}"
+RUN sudo pwsh -Command "& {Install-PSResource -Name PSNetTools, linuxinfo -Scope AllUsers -PassThru -Verbose}"
 COPY profile.ps1 /opt/microsoft/powershell/7
 RUN echo "*** Build finished ***"
 "@
@@ -127,6 +131,8 @@ RUN echo "*** Build finished ***"
         if($Data.scout){
             Write-PSFMessage -Level Host -Message "{0}: Analyze {1} for critical and high vulnerabilities" -StringValues $function, $($Data.imagename), $($Data.container)
             docker scout cves $($Data.imagename) --only-severity "critical, high, medium" --details --exit-code
+        }else{
+            # docker scout quickview
         }
 
         # remove json-file

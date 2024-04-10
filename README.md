@@ -123,3 +123,15 @@ Ubuntu is created:
 Docker containers:
 
 ![Docker-Containers](./img/Docker-Containers.png)
+
+## Request a Linux over Bruno
+
+Send a RestAPI call to create an Almalinux over Bruno:
+
+![Request-Almalinux](./img/RestAPI-Almalinux.png)
+
+Almalinux is created:
+
+![Created-Almalinux](./img/Created-Almalinux2.png)
+
+![Created-Almalinux](./img/Created-Almalinux1.png)

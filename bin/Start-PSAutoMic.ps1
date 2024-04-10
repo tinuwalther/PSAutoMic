@@ -325,14 +325,31 @@ Set-PSFLoggingProvider @paramSetPSFLoggingProvider
 
 Clear-Host
 
-"Running $Scriptname" | Out-Default
-
-$isrunning = Get-Process "Docker Desktop" -ErrorAction SilentlyContinue
-if([String]::IsNullOrEmpty($isrunning)){
-    Write-Output "Start docker, please wait..."
-    Start-Process -FilePath "$($env:ProgramFiles)\Docker\Docker\Docker Desktop.exe" -NoNewWindow
+if($PSVersionTable.PSVersion.Major -lt 6){
+    # Windows only
+    $IsWindows = $true
+    $os = 'Windows'
 }else{
-    Write-Output "Docker is already running"
+    if($IsWindows){
+        $os = 'Windows'
+    }
+    if($IsLinux){
+        $os = 'Linux'
+    }
+    if($IsMacOS){
+        $os = 'Mac'
+    }
+}
+Write-Host "Running $Scriptname on $os" -ForegroundColor Green
+
+if($IsWindows){
+    $isrunning = Get-Process "Docker Desktop" -ErrorAction SilentlyContinue
+    if([String]::IsNullOrEmpty($isrunning)){
+        Write-Host "Start docker, please wait..." -ForegroundColor Cyan
+        Start-Process -FilePath "$($env:ProgramFiles)\Docker\Docker\Docker Desktop.exe" -WindowStyle Hidden
+    }else{
+        Write-Host "Docker is already running" -ForegroundColor Green
+    }    
 }
 
 Start-PodeServer -Thread 2 {

@@ -28,8 +28,10 @@ function prompt{
     $Version = "$($PSVersionTable.PSVersion.ToString())"
     $OsString = cat /etc/os-release | grep "PRETTY_NAME"
     $OsVerison = [regex]::Match($OsString, '\w+\s\d+\.\d+').value
-    Write-Host "[$($history.count[-1])][" -NoNewline
-    Write-Host "$([Environment]::MachineName) => $($OsVerison)" -nonewline -foregroundcolor $color
+    Write-Host "[" -NoNewline
+    Write-Host "$($history.count[-1])" -NoNewline -foregroundcolor $color
+    Write-Host "][" -NoNewline
+    Write-Host "$([Environment]::UserName)@$([Environment]::MachineName)][$($OsVerison)" -nonewline -foregroundcolor $color
     Write-Host ("] I ") -nonewline
     Write-Host (([char]9829) ) -ForegroundColor $color -nonewline
     Write-Host (" PS $Version ") -nonewline
