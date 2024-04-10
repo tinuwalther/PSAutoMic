@@ -2,10 +2,11 @@ FROM ubuntu:latest
 LABEL os="ubuntu"
 LABEL author="tinu"
 LABEL content="ubuntu with PowerShell 7"
-LABEL release-date="2023-04-16 13:57:49"
+LABEL release-date="2024-04-10 14:32:53"
 LABEL version="0.0.1-beta"
 ENV container docker
 RUN echo "*** Build Image ***"
+RUN apt-get clean all
 RUN apt-get update
 RUN echo "> Install PowerShell 7"
 RUN apt-get install -y wget apt-transport-https software-properties-common

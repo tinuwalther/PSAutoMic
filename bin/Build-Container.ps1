@@ -70,11 +70,11 @@ ENV container docker
 $alma = @"
 $($labels)
 RUN echo "*** Build Image ***"
+RUN dnf clean all -y
 RUN dnf update -y
 RUN echo "> Install PowerShell 7"
-RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
-RUN rpm -Uvh https://packages.microsoft.com/config/centos/8/packages-microsoft-prod.rpm
-RUN dnf install powershell -y
+RUN curl https://packages.microsoft.com/config/rhel/$($Data.version)/prod.repo | tee /etc/yum.repos.d/microsoft.repo
+RUN dnf install --assumeyes powershell
 RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
 RUN pwsh -Command "& {Install-Module -Name PSNetTools, linuxinfo}"
 COPY profile.ps1 /opt/microsoft/powershell/7
@@ -84,6 +84,7 @@ RUN echo "*** Build finished ***"
 $ubuntu = @"
 $($labels)
 RUN echo "*** Build Image ***"
+RUN apt-get clean all
 RUN apt-get update
 RUN echo "> Install PowerShell 7"
 RUN apt-get install -y wget apt-transport-https software-properties-common

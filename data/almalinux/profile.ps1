@@ -1,31 +1,33 @@
-function Test-IsCurrentUserAdmin{
-    if($IsLinux){
-        if((id -u) -eq 0){
-            return $true
-        }else{
-            return $false
+function Test-IsElevated {
+    if($PSVersionTable.PSVersion.Major -lt 6){
+        # Windows only
+        $user = [Security.Principal.WindowsIdentity]::GetCurrent()
+        $ret  = (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+    }else{
+        if($IsWindows){
+            $user = [Security.Principal.WindowsIdentity]::GetCurrent()
+            $ret  = (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+        }
+        if($IsLinux -or $IsMacOS){
+            $ret  = (id -u) -eq 0
         }
     }
-    if($IsWindows){
-        $current = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-        $IsAdmin = $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-        return $IsAdmin
-    }
+    $ret
 }
 
 function prompt{
 
-    $IsAdmin = Test-IsCurrentUserAdmin
-    if($IsAdmin){
+    if (Test-IsElevated) {
         $color = 'Red'
-    }else{
+    }
+    else{
         $color = 'Green'
     }
     
     $history = Get-History -ErrorAction Ignore
     $Version = "$($PSVersionTable.PSVersion.ToString())"
     Write-Host "[$($history.count[-1])][" -NoNewline
-    Write-Host $([System.Net.Dns]::GetHostName()) -nonewline -foregroundcolor $color
+    Write-Host $([Environment]::MachineName) -nonewline -foregroundcolor $color
     Write-Host ("] I ") -nonewline
     Write-Host (([char]9829) ) -ForegroundColor $color -nonewline
     Write-Host (" PS $Version ") -nonewline

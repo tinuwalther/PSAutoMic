@@ -288,6 +288,7 @@ function Add-PodeApiEndpoint{
                 # Out to the Terminal or for other logic
                 $queue = $($($PSScriptRoot) -replace 'bin','queue')
                 $data | ConvertTo-Json | Out-File -FilePath $(Join-Path $queue -ChildPath "$($data.Uuid).json") -Encoding utf8
+                $data | Out-Default
         
                 # Rest response
                 Write-PSFMessage -FunctionName $function -Level Verbose -Message "Process {0}" -StringValues $($data.Uuid) -Target $($data.Agent)
@@ -325,6 +326,14 @@ Set-PSFLoggingProvider @paramSetPSFLoggingProvider
 Clear-Host
 
 "Running $Scriptname" | Out-Default
+
+$isrunning = Get-Process "Docker Desktop" -ErrorAction SilentlyContinue
+if([String]::IsNullOrEmpty($isrunning)){
+    Write-Output "Start docker, please wait..."
+    Start-Process -FilePath "$($env:ProgramFiles)\Docker\Docker\Docker Desktop.exe" -NoNewWindow
+}else{
+    Write-Output "Docker is already running"
+}
 
 Start-PodeServer -Thread 2 {
 
