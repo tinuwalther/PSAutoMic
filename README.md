@@ -49,7 +49,7 @@ Password for user Keepass Master Password: ********
 
 ## Request a Linux over PowerShell
 
-Request your first almalinux over RestAPI.
+Request your first almalinux over RestAPI. The owner is also the logged-in user and is member of sudoers.
 
 ````powershell
 $BearerToken = ""
@@ -123,7 +123,3 @@ Ubuntu is created:
 Docker containers:
 
 ![Docker-Containers](./img/Docker-Containers.png)
-
-## Watch the video on Youtube
-
-[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/0CRH4Nsnyyw)
