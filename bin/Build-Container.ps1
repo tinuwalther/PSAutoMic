@@ -67,7 +67,7 @@ LABEL version="0.0.1-beta"
 ENV container docker
 "@
 
-$passwordHashRoot = ''
+$passwordHashRoot = $Data.pass
 
 $alma = @"
 $($labels)
