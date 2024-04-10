@@ -67,16 +67,22 @@ LABEL version="0.0.1-beta"
 ENV container docker
 "@
 
+$passwordHashRoot = ''
+
 $alma = @"
 $($labels)
 RUN echo "*** Build Image ***"
 RUN dnf clean all -y
 RUN dnf update -y
+RUN dnf install sudo -y
 RUN echo "> Install PowerShell 7"
 RUN curl https://packages.microsoft.com/config/rhel/$($Data.version)/prod.repo | tee /etc/yum.repos.d/microsoft.repo
 RUN dnf install --assumeyes powershell
 RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
 RUN pwsh -Command "& {Install-Module -Name PSNetTools, linuxinfo}"
+RUN echo "Add new user $($Data.owner) to wheel"
+RUN useradd -m -g users -p `$(openssl passwd -1 $($passwordHashRoot)) $($Data.owner)
+RUN usermod -aG wheel $($Data.owner)
 COPY profile.ps1 /opt/microsoft/powershell/7
 RUN echo "*** Build finished ***"
 "@
@@ -93,9 +99,13 @@ RUN dpkg -i packages-microsoft-prod.deb
 RUN rm packages-microsoft-prod.deb
 RUN apt-get update
 RUN apt-get install -y powershell
-COPY profile.ps1 /opt/microsoft/powershell/7
 RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
 RUN pwsh -Command "& {Install-Module -Name PSNetTools, linuxinfo}"
+RUN apt install sudo
+RUN echo "Add new user $($Data.owner) to sudo"
+RUN sudo useradd -m -g users -p `$(openssl passwd -1 $($passwordHashRoot)) $($Data.owner)
+RUN sudo usermod -aG sudo $($Data.owner)
+COPY profile.ps1 /opt/microsoft/powershell/7
 RUN echo "*** Build finished ***"
 "@
 #endregion
@@ -112,15 +122,18 @@ RUN echo "*** Build finished ***"
         #Write-Host "$($function): Create DockerAsset $($Data.imagename), $($Data.container)" -ForegroundColor Green
         Write-PSFMessage -Level Host -Message "{0}: Create {1} {2}" -StringValues $function, $($Data.imagename), $($Data.container)
         docker build -f .\dockerfile -t $($Data.imagename) .
+        
         # Run cves tests against images to find vulnerabilities and learn how to fix them
-        Write-PSFMessage -Level Host -Message "{0}: Analyze {1} for critical and high vulnerabilities" -StringValues $function, $($Data.imagename), $($Data.container)
-        docker scout cves $($Data.imagename) --only-severity "critical, high, medium" --details --exit-code
+        if($Data.scout){
+            Write-PSFMessage -Level Host -Message "{0}: Analyze {1} for critical and high vulnerabilities" -StringValues $function, $($Data.imagename), $($Data.container)
+            docker scout cves $($Data.imagename) --only-severity "critical, high, medium" --details --exit-code
+        }
 
         # remove json-file
         Remove-Item -Path $($FileFullPath) -Confirm:$false -Force
 
         # Start the container interactive
-        docker run -e TZ="Europe/Zurich" --hostname $($Data.hostname) --name $($Data.container) --network custom -it $($Data.imagename) pwsh -NoLogo
+        docker run -e TZ="Europe/Zurich" --hostname $($Data.hostname) --name $($Data.container) --network custom -it --user $($Data.owner) $($Data.imagename) pwsh -NoLogo
         #pwsh -NoLogo -Command Get-OSInfo
         #Clear-Host -> printf "\033c"
     }else{
