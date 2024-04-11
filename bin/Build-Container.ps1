@@ -56,6 +56,13 @@ function New-DockerAsset {
     $root = $($PSScriptRoot) -replace 'bin','data'
     Set-Location (Join-Path -Path $root -ChildPath $($Data.Os))
 
+    $passwordHashRoot = $Data.pass
+    $arrPSModules = New-Object System.Collections.ArrayList
+    $null = $arrPSModules.Add('PsNetTools')
+    $null = $arrPSModules.Add('PSReadLine')
+    $null = $arrPSModules.Add($($Data.modules))
+    $PSModules = $arrPSModules -split '\s' -join ','
+    
 #region dockerfile
 $labels = @"
 FROM $($Data.Os):$($Data.version)
@@ -66,8 +73,6 @@ LABEL release-date="$(Get-Date -f 'yyyy-MM-dd HH:mm:ss')"
 LABEL version="0.0.1-beta"
 ENV container docker
 "@
-
-$passwordHashRoot = $Data.pass
 
 $alma = @"
 $($labels)
@@ -84,7 +89,7 @@ RUN usermod -aG wheel $($Data.owner)
 RUN sudo pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
 RUN sudo pwsh -Command "& {Install-Module -Name Microsoft.PowerShell.PSResourceGet -Scope AllUsers -PassThru -Force -Verbose}"
 RUN sudo pwsh -Command "& {Set-PSResourceRepository -Name "PSGallery" -Priority 25 -Trusted -PassThru}"
-RUN sudo pwsh -Command "& {Install-PSResource -Name PSNetTools, linuxinfo -Scope AllUsers -PassThru -Verbose}"
+RUN sudo pwsh -Command "& {Install-PSResource -Name $($PSModules) -Reinstall -Scope AllUsers -PassThru -Verbose}"
 COPY profile.ps1 /opt/microsoft/powershell/7
 RUN echo "*** Build finished ***"
 "@
@@ -108,7 +113,7 @@ RUN sudo usermod -aG sudo $($Data.owner)
 RUN sudo pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
 RUN sudo pwsh -Command "& {Install-Module -Name Microsoft.PowerShell.PSResourceGet -Scope AllUsers -PassThru -Force -Verbose}"
 RUN sudo pwsh -Command "& {Set-PSResourceRepository -Name "PSGallery" -Priority 25 -Trusted -PassThru}"
-RUN sudo pwsh -Command "& {Install-PSResource -Name PSNetTools, linuxinfo -Scope AllUsers -PassThru -Verbose}"
+RUN sudo pwsh -Command "& {Install-PSResource -Name $($PSModules) -Scope AllUsers -PassThru -Verbose}"
 COPY profile.ps1 /opt/microsoft/powershell/7
 RUN echo "*** Build finished ***"
 "@

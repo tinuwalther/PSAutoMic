@@ -292,7 +292,7 @@ function Add-PodeApiEndpoint{
         
                 # Rest response
                 Write-PSFMessage -FunctionName $function -Level Verbose -Message "Process {0}" -StringValues $($data.Uuid) -Target $($data.Agent)
-                Write-PodeJsonResponse -Value (@{Uuid = $($data.Uuid)} | ConvertTo-Json)
+                Write-PodeJsonResponse -Value (@{response = $($data)} | ConvertTo-Json)
             }else{
                 Write-PodeJsonResponse -Value (@{Uuid = "$($body.Os) not implemented yet"} | ConvertTo-Json)
             }
