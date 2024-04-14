@@ -141,3 +141,11 @@ Almalinux is created:
 ![Created-Almalinux](./img/Created-Almalinux2.png)
 
 ![Created-Almalinux](./img/Created-Almalinux1.png)
+
+## Start a container interactive
+
+To start a container, that already exists:
+
+````powershell
+docker start photon_container -i
+````

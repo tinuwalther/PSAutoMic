@@ -140,6 +140,7 @@ RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trust
 RUN pwsh -Command "& {Install-Module -Name Microsoft.PowerShell.PSResourceGet -Scope AllUsers -PassThru -Force -Verbose}"
 RUN pwsh -Command "& {Set-PSResourceRepository -Name "PSGallery" -Priority 25 -Trusted -PassThru}"
 RUN pwsh -Command "& {Install-PSResource -Name $($PSModules) -Scope AllUsers -PassThru -Verbose}"
+RUN pwsh -Command "&{Install-PSResource -Name VMware.PowerCLI -Repository PSGallery -Scope AllUsers -PassThru -Verbose}"
 COPY profile.ps1 /usr/lib/powershell
 RUN echo "*** Build finished ***"
 "@
