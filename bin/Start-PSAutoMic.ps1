@@ -269,33 +269,21 @@ function Add-PodeApiEndpoint{
         Add-PodeRoute -Method Post -Path '/api/v1/docker' -Authentication 'Validate' -ContentType 'application/json' -ArgumentList $function -ScriptBlock {
             param($function)
             # route logic
-            $continue = $false
-            $body = [PSCustomObject]$WebEvent.Data #| ConvertFrom-Json
-            switch ($body.Os){
-                'almalinux' { $continue = $true  }
-                'ubuntu'    { $continue = $true  }
-                default     { $continue = $false }
+            $data = [PSCustomObject]@{
+                TimeStamp = Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'
+                Uuid      = (New-Guid | Select-Object -ExpandProperty Guid)
+                Source    = $env:COMPUTERNAME
+                Agent     = $WebEvent.Request.UserAgent
+                Data      = $WebEvent.Data
             }
-
-            if($continue){
-                $data = [PSCustomObject]@{
-                    TimeStamp = Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'
-                    Uuid      = (New-Guid | Select-Object -ExpandProperty Guid)
-                    Source    = $env:COMPUTERNAME
-                    Agent     = $WebEvent.Request.UserAgent
-                    Data      = $WebEvent.Data
-                }
-                # Out to the Terminal or for other logic
-                $queue = $($($PSScriptRoot) -replace 'bin','queue')
-                $data | ConvertTo-Json | Out-File -FilePath $(Join-Path $queue -ChildPath "$($data.Uuid).json") -Encoding utf8
-                $data | Out-Default
-        
-                # Rest response
-                Write-PSFMessage -FunctionName $function -Level Verbose -Message "Process {0}" -StringValues $($data.Uuid) -Target $($data.Agent)
-                Write-PodeJsonResponse -Value (@{response = $($data)} | ConvertTo-Json)
-            }else{
-                Write-PodeJsonResponse -Value (@{Uuid = "$($body.Os) not implemented yet"} | ConvertTo-Json)
-            }
+            # Out to the Terminal or for other logic
+            $queue = $($($PSScriptRoot) -replace 'bin','queue')
+            $data | ConvertTo-Json | Out-File -FilePath $(Join-Path $queue -ChildPath "$($data.Uuid).json") -Encoding utf8
+            $data | Out-Default
+    
+            # Rest response
+            Write-PSFMessage -FunctionName $function -Level Verbose -Message "Process {0}" -StringValues $($data.Uuid) -Target $($data.Agent)
+            Write-PodeJsonResponse -Value (@{response = $($data)} | ConvertTo-Json)
         }
     }
 

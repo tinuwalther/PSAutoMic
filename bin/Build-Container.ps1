@@ -86,6 +86,7 @@ RUN dnf install --assumeyes powershell
 RUN echo "Add new user $($Data.owner) to wheel"
 RUN useradd -m -g users -p `$(openssl passwd -1 $($passwordHashRoot)) $($Data.owner)
 RUN usermod -aG wheel $($Data.owner)
+RUN echo "> Install PSModules"
 RUN sudo pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
 RUN sudo pwsh -Command "& {Install-Module -Name Microsoft.PowerShell.PSResourceGet -Scope AllUsers -PassThru -Force -Verbose}"
 RUN sudo pwsh -Command "& {Set-PSResourceRepository -Name "PSGallery" -Priority 25 -Trusted -PassThru}"
@@ -110,6 +111,7 @@ RUN apt install sudo
 RUN echo "Add new user $($Data.owner) to sudo"
 RUN sudo useradd -m -g users -p `$(openssl passwd -1 $($passwordHashRoot)) $($Data.owner)
 RUN sudo usermod -aG sudo $($Data.owner)
+RUN echo "> Install PSModules"
 RUN sudo pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
 RUN sudo pwsh -Command "& {Install-Module -Name Microsoft.PowerShell.PSResourceGet -Scope AllUsers -PassThru -Force -Verbose}"
 RUN sudo pwsh -Command "& {Set-PSResourceRepository -Name "PSGallery" -Priority 25 -Trusted -PassThru}"
@@ -117,11 +119,37 @@ RUN sudo pwsh -Command "& {Install-PSResource -Name $($PSModules) -Scope AllUser
 COPY profile.ps1 /opt/microsoft/powershell/7
 RUN echo "*** Build finished ***"
 "@
+
+<# https://vmware.github.io/photon/docs-v5/
+    Photon OS Packages: https://packages.vmware.com/photon/5.0/photon_5.0_x86_64/x86_64/
+    Install PowerShell: https://williamlam.com/2022/12/powercli-13-0-on-photon-os.html
+#>
+$photon = @"
+$($labels)
+RUN echo "*** Build Image ***"
+RUN tdnf clean all
+RUN tdnf update
+RUN echo "> Install PowerShell 7"
+RUN tdnf -y install wget tar git patch build-essential gcc zlib-devel openssl-devel powershell
+RUN tdnf -y install shadow
+RUN tdnf -y install sudo
+RUN useradd -m -g users -p `$(openssl passwd -1 $($passwordHashRoot)) $($Data.owner)
+RUN usermod -aG sudo $($Data.owner)
+RUN echo "> Install PSModules"
+RUN pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
+RUN pwsh -Command "& {Install-Module -Name Microsoft.PowerShell.PSResourceGet -Scope AllUsers -PassThru -Force -Verbose}"
+RUN pwsh -Command "& {Set-PSResourceRepository -Name "PSGallery" -Priority 25 -Trusted -PassThru}"
+RUN pwsh -Command "& {Install-PSResource -Name $($PSModules) -Scope AllUsers -PassThru -Verbose}"
+COPY profile.ps1 /usr/lib/powershell
+RUN echo "*** Build finished ***"
+"@
 #endregion
 
+    Write-Host "Build $($Data.Os)..." -ForegroundColor Green
     switch($Data.Os){
         'almalinux' { $alma   | Set-Content dockerfile -Force }
         'ubuntu'    { $ubuntu | Set-Content dockerfile -Force }
+        'photon'    { $photon | Set-Content dockerfile -Force }
         default     {"Not implemented yet!"}
     }
 
@@ -143,8 +171,20 @@ RUN echo "*** Build finished ***"
         # remove json-file
         Remove-Item -Path $($FileFullPath) -Confirm:$false -Force
 
-        # Start the container interactive
-        docker run -e TZ="Europe/Zurich" --hostname $($Data.hostname) --name $($Data.container) --network custom -it --user $($Data.owner) $($Data.imagename) pwsh -NoLogo
+        # Start the container interactive either as root or as owner
+        if($Data.user){
+            if($Data.pwsh){
+                docker run -e TZ="Europe/Zurich" --hostname $($Data.hostname) --name $($Data.container) --network custom -it --user $($Data.owner) $($Data.imagename) pwsh -NoLogo
+            }else{
+                docker run -e TZ="Europe/Zurich" --hostname $($Data.hostname) --name $($Data.container) --network custom -it --user $($Data.owner) $($Data.imagename)
+            }
+        }else{
+            if($Data.pwsh){
+                docker run -e TZ="Europe/Zurich" --hostname $($Data.hostname) --name $($Data.container) --network custom -it $($Data.imagename) pwsh -NoLogo
+            }else{
+                docker run -e TZ="Europe/Zurich" --hostname $($Data.hostname) --name $($Data.container) --network custom -it $($Data.imagename)
+            }
+        }
         #pwsh -NoLogo -Command Get-OSInfo
         #Clear-Host -> printf "\033c"
     }else{
@@ -176,6 +216,7 @@ function Remove-DockerAsset {
 
     $function = "$($MyInvocation.MyCommand.Name)"
     Write-PSFMessage -Level Verbose -Message "Initialize {0}" -StringValues $function
+    Write-Host "Remove $($Data.Os)..." -ForegroundColor Green
 
     $image     = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Image}}"
     $container = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Names}}"

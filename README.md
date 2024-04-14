@@ -49,6 +49,12 @@ Password for user Keepass Master Password: ********
 
 ## Request a Linux over PowerShell
 
+Current available Kernel:
+
+- Almalinux
+- Ubuntu
+- Photon OS
+
 Request your first almalinux over RestAPI. The owner is also the logged-in user and is member of sudoers.
 
 ````powershell
