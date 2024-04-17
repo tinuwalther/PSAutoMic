@@ -278,12 +278,12 @@ function Add-PodeApiEndpoint{
             }
             # Out to the Terminal or for other logic
             $queue = $($($PSScriptRoot) -replace 'bin','queue')
-            $data | ConvertTo-Json | Out-File -FilePath $(Join-Path $queue -ChildPath "$($data.Uuid).json") -Encoding utf8
+            $data | ConvertTo-Json -Depth 5 | Out-File -FilePath $(Join-Path $queue -ChildPath "$($data.Uuid).json") -Encoding utf8
             $data | Out-Default
     
             # Rest response
             Write-PSFMessage -FunctionName $function -Level Verbose -Message "Process {0}" -StringValues $($data.Uuid) -Target $($data.Agent)
-            Write-PodeJsonResponse -Value (@{response = $($data)} | ConvertTo-Json)
+            Write-PodeJsonResponse -Value (@{response = $($data)} | ConvertTo-Json -Depth 5)
         }
     }
 
