@@ -83,6 +83,7 @@ RUN dnf install sudo -y
 RUN echo "> Install PowerShell 7"
 RUN curl https://packages.microsoft.com/config/rhel/$($Data.version)/prod.repo | tee /etc/yum.repos.d/microsoft.repo
 RUN dnf install --assumeyes powershell
+RUN dnf install --assumeyes git
 RUN echo "Add new user $($Data.owner) to wheel"
 RUN useradd -m -g users -p `$(openssl passwd -1 $($passwordHashRoot)) $($Data.owner)
 RUN usermod -aG wheel $($Data.owner)
@@ -144,14 +145,60 @@ RUN pwsh -Command "&{Install-PSResource -Name VMware.PowerCLI -Repository PSGall
 COPY profile.ps1 /usr/lib/powershell
 RUN echo "*** Build finished ***"
 "@
+
+$podepshtml = @"
+FROM almalinux:9
+LABEL os="$($Data.Os)"
+LABEL author="$($Data.owner)"
+LABEL content="$($Data.Os) with PodePSHTML"
+LABEL release-date="$(Get-Date -f 'yyyy-MM-dd HH:mm:ss')"
+LABEL version="0.0.1-beta"
+ENV container docker
+RUN echo "*** Build Image ***"
+RUN dnf clean all -y
+RUN dnf update -y
+RUN dnf install sudo -y
+RUN echo "> Install PowerShell 7"
+RUN curl https://packages.microsoft.com/config/rhel/9/prod.repo | tee /etc/yum.repos.d/microsoft.repo
+RUN dnf install --assumeyes powershell
+RUN dnf install --assumeyes git
+RUN git clone https://github.com/tinuwalther/PodePSHTML.git
+RUN sudo pwsh -Command "& {Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -SourceLocation https://www.powershellgallery.com/api/v2}"
+RUN sudo pwsh -Command "& {Install-Module -Name Microsoft.PowerShell.PSResourceGet -Scope AllUsers -PassThru -Force -Verbose}"
+RUN sudo pwsh -Command "& {Set-PSResourceRepository -Name "PSGallery" -Priority 25 -Trusted -PassThru}"
+RUN sudo pwsh -Command "& {Install-PSResource -Name Pode, PSHTML, mySQLite, PsNetTools, Pester -SkipPublisherCheck -Repository PSGallery -Reinstall -Scope AllUsers -PassThru -Verbose}"
+COPY profile.ps1 /opt/microsoft/powershell/7
+EXPOSE 8085
+RUN echo "*** Build finished ***"
+"@
+
+$default = @"
+FROM almalinux:9
+LABEL os="almalinux"
+LABEL author="tinu"
+LABEL content="almalinux with PowerShell 7"
+ENV container docker
+RUN echo "*** Build Image ***"
+RUN dnf clean all -y
+RUN dnf update -y
+RUN dnf install sudo -y
+RUN echo "> Install PowerShell 7"
+RUN curl https://packages.microsoft.com/config/rhel/9/prod.repo | tee /etc/yum.repos.d/microsoft.repo
+RUN dnf install --assumeyes powershell
+RUN dnf install --assumeyes git
+RUN echo "> Install PSModules"
+COPY profile.ps1 /opt/microsoft/powershell/7
+RUN echo "*** Build finished ***"
+"@
 #endregion
 
     Write-Host "Build $($Data.Os)..." -ForegroundColor Green
     switch($Data.Os){
-        'almalinux' { $alma   | Set-Content dockerfile -Force }
-        'ubuntu'    { $ubuntu | Set-Content dockerfile -Force }
-        'photon'    { $photon | Set-Content dockerfile -Force }
-        default     {"Not implemented yet!"}
+        'almalinux'  { $alma   | Set-Content dockerfile -Force }
+        'ubuntu'     { $ubuntu | Set-Content dockerfile -Force }
+        'photon'     { $photon | Set-Content dockerfile -Force }
+        'podepshtml' { $podepshtml | Set-Content dockerfile -Force }
+        default      {$default | Set-Content dockerfile -Force }
     }
 
     #$container = docker container ls -a --filter "Name=$($Data.container)" --format "{{.Names}}"

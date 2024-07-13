@@ -372,5 +372,5 @@ Start-PodeServer -Thread 2 {
     Write-PSFMessage -FunctionName $function -Level Verbose -Message "Process API" -StringValues $function, $($PSScriptRoot), ([System.IO.FileInfo]::new($($PSCommandPath)).Name) -ErrorRecord $_
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', $function -Join ' ')
     Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
-}
+} -Verbose
  
